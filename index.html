@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>Evie's Woordenquiz</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -132,14 +133,14 @@ body::after {
 .act-card {
   width:100%; border:none; border-radius:var(--r); cursor:pointer;
   display:flex; align-items:center; gap:0; overflow:hidden;
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow); color:var(--text);
   transition:transform .14s ease, box-shadow .14s ease;
   text-align:left; position:relative;
 }
 .act-card:active { transform:scale(.97); box-shadow:0 3px 12px rgba(180,90,200,.12); }
 
 .act-strip {
-  width:90px; min-height:100px; flex-shrink:0;
+  width:90px; min-height:76px; flex-shrink:0;
   display:flex; align-items:center; justify-content:center; font-size:42px;
 }
 .act-fc .act-strip { background:linear-gradient(160deg,var(--c1) 0%,var(--c1-d) 100%); }
@@ -147,7 +148,8 @@ body::after {
 .act-sp .act-strip { background:linear-gradient(160deg,var(--c3) 0%,var(--c3-d) 100%); }
 
 .act-body {
-  flex:1; padding:16px 14px; background:var(--surface);
+  flex:1; padding:0 14px; background:var(--surface);
+  display:flex; flex-direction:column; justify-content:center; min-height:76px;
 }
 .act-title {
   font-family:'Fredoka',sans-serif; font-size:22px; font-weight:700;
