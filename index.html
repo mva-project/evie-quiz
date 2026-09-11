@@ -1,37 +1,37 @@
 <meta charset="utf-8">
-<title>Evie's Woordenquiz</title>
+<title>Woordenquiz</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Evie's Quiz">
+<meta name="apple-mobile-web-app-title" content="Woordenquiz">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700&display=swap">
 
 <style>
 :root {
-  --bg:        #FEF0F9;
+  --bg:        #EEF2FF;
   --surface:   #FFFFFF;
-  --surface-2: #FDF5FF;
-  --text:      #3D1F52;
-  --text-soft: #9B6BAF;
+  --surface-2: #F0F4FF;
+  --text:      #1E293B;
+  --text-soft: #64748B;
   --text-inv:  #FFFFFF;
 
-  --c1:        #FF7EC8;   /* pink  – flashkaarten */
-  --c1-l:      #FFD6EC;
-  --c1-d:      #FF4FA6;
-  --c2:        #B17EFF;   /* purple – meerkeuze */
-  --c2-l:      #E8D5FF;
-  --c2-d:      #8B5CF6;
-  --c3:        #38BDF8;   /* sky – schrijven */
-  --c3-l:      #D0F2FF;
-  --c3-d:      #0EA5E9;
+  --c1:        #3B82F6;   /* blauw – flashkaarten */
+  --c1-l:      #DBEAFE;
+  --c1-d:      #2563EB;
+  --c2:        #8B5CF6;   /* paars – meerkeuze */
+  --c2-l:      #EDE9FE;
+  --c2-d:      #7C3AED;
+  --c3:        #10B981;   /* groen – schrijven */
+  --c3-l:      #D1FAE5;
+  --c3-d:      #059669;
 
   --correct:   #34D399;
   --wrong:     #FB7185;
   --star:      #FBBF24;
 
-  --border:    rgba(61,31,82,0.10);
-  --shadow:    0 6px 28px rgba(180,90,200,0.14);
+  --border:    rgba(30,41,59,0.10);
+  --shadow:    0 6px 28px rgba(100,116,180,0.14);
   --r:         22px;
   --safe-top:  env(safe-area-inset-top,  0px);
   --safe-bot:  env(safe-area-inset-bottom, 0px);
@@ -39,17 +39,17 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #1A0F24; --surface: #2A1840; --surface-2: #241040;
-    --text: #F5E8FF; --text-soft: #C4A0E0;
-    --c1-l: #4A1030; --c2-l: #2E1550; --c3-l: #0C2D45;
-    --border: rgba(245,232,255,0.10); --shadow: 0 6px 28px rgba(0,0,0,0.40);
+    --bg: #0F1629; --surface: #1E2D4A; --surface-2: #162038;
+    --text: #E2E8F0; --text-soft: #94A3B8;
+    --c1-l: #1E3A5F; --c2-l: #2D1B69; --c3-l: #064E3B;
+    --border: rgba(226,232,240,0.10); --shadow: 0 6px 28px rgba(0,0,0,0.40);
   }
 }
 :root[data-theme="dark"] {
-  --bg: #1A0F24; --surface: #2A1840; --surface-2: #241040;
-  --text: #F5E8FF; --text-soft: #C4A0E0;
-  --c1-l: #4A1030; --c2-l: #2E1550; --c3-l: #0C2D45;
-  --border: rgba(245,232,255,0.10); --shadow: 0 6px 28px rgba(0,0,0,0.40);
+  --bg: #0F1629; --surface: #1E2D4A; --surface-2: #162038;
+  --text: #E2E8F0; --text-soft: #94A3B8;
+  --c1-l: #1E3A5F; --c2-l: #2D1B69; --c3-l: #064E3B;
+  --border: rgba(226,232,240,0.10); --shadow: 0 6px 28px rgba(0,0,0,0.40);
 }
 
 *,*::before,*::after { box-sizing:border-box; -webkit-tap-highlight-color:transparent; margin:0; padding:0; }
@@ -60,18 +60,17 @@ html,body {
   -webkit-font-smoothing:antialiased;
 }
 
-/* soft blobs in background */
 body::before, body::after {
   content:''; position:fixed; border-radius:50%; pointer-events:none; z-index:0;
 }
 body::before {
   width:320px; height:320px;
-  background:radial-gradient(circle, rgba(255,182,224,.55) 0%, transparent 68%);
+  background:radial-gradient(circle, rgba(147,197,253,.50) 0%, transparent 68%);
   top:-80px; right:-80px;
 }
 body::after {
   width:280px; height:280px;
-  background:radial-gradient(circle, rgba(196,164,255,.48) 0%, transparent 68%);
+  background:radial-gradient(circle, rgba(167,139,250,.42) 0%, transparent 68%);
   bottom:-60px; left:-60px;
 }
 
@@ -92,14 +91,74 @@ body::after {
 @keyframes sIn  { from{opacity:0;transform:translateX(26px)} to{opacity:1;transform:none} }
 @keyframes sOut { to{opacity:0;transform:translateX(-26px)} }
 
+/* ── SETUP SCREEN ───────────────────────────── */
+#screen-setup { justify-content:flex-start; gap:0; }
+
+.setup-head {
+  text-align:center; padding:24px 0 20px; flex-shrink:0;
+}
+.setup-icon { font-size:52px; line-height:1; margin-bottom:10px; }
+.setup-title {
+  font-family:'Fredoka',sans-serif; font-size:36px; font-weight:700; line-height:1.1;
+}
+.setup-title span { color:var(--c1); }
+.setup-sub { font-size:15px; color:var(--text-soft); font-weight:600; margin-top:4px; }
+
+.setup-section { margin-bottom:18px; flex-shrink:0; }
+.setup-label {
+  font-size:12px; font-weight:700; color:var(--text-soft);
+  text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px;
+}
+.setup-input {
+  width:100%; height:56px; border-radius:14px; border:2.5px solid var(--border);
+  background:var(--surface); font-family:'Fredoka',sans-serif;
+  font-size:22px; font-weight:600; color:var(--text); padding:0 16px;
+  outline:none; transition:border-color .15s; caret-color:var(--c1);
+}
+.setup-input:focus { border-color:var(--c1); }
+.setup-input::placeholder { color:var(--text-soft); font-weight:400; font-size:18px; }
+
+.setup-sets { display:flex; flex-direction:column; gap:10px; }
+.setup-set-btn {
+  width:100%; background:var(--surface); border:2.5px solid var(--border);
+  border-radius:var(--r); padding:13px 16px; cursor:pointer; text-align:left;
+  display:flex; align-items:center; gap:12px;
+  transition:border-color .14s, background .14s, transform .12s;
+  box-shadow:var(--shadow);
+}
+.setup-set-btn.selected { border-color:var(--c1); background:rgba(59,130,246,.06); }
+.setup-set-btn:active { transform:scale(.98); }
+.setup-set-icon { font-size:26px; flex-shrink:0; }
+.setup-set-info { flex:1; min-width:0; }
+.setup-set-name { font-family:'Fredoka',sans-serif; font-size:17px; font-weight:700; }
+.setup-set-desc { font-size:12px; color:var(--text-soft); font-weight:600; margin-top:2px; }
+.setup-set-count { font-size:11px; color:var(--text-soft); font-weight:700; margin-top:3px; }
+.setup-set-check {
+  width:24px; height:24px; border-radius:50%; border:2px solid var(--border);
+  flex-shrink:0; display:flex; align-items:center; justify-content:center;
+  font-size:13px; transition:all .14s; color:transparent;
+}
+.setup-set-btn.selected .setup-set-check {
+  background:var(--c1); border-color:var(--c1); color:#fff;
+}
+
+.btn-setup-start {
+  font-family:'Fredoka',sans-serif; font-size:20px; font-weight:700;
+  color:var(--text-inv); background:linear-gradient(135deg,var(--c1),var(--c1-d));
+  border:none; border-radius:40px; padding:17px 24px; cursor:pointer; width:100%;
+  margin-top:10px; flex-shrink:0; transition:transform .14s ease;
+  box-shadow:0 4px 16px rgba(59,130,246,.35);
+}
+.btn-setup-start:active { transform:scale(.98); }
+
 /* ── HOME SCREEN ──────────────────────────────── */
 #screen-home { justify-content:flex-start; gap:0; }
 
 .home-head {
-  text-align:center; padding-bottom:20px; flex-shrink:0;
+  text-align:center; padding-bottom:20px; flex-shrink:0; position:relative;
 }
 .home-sparkles {
-  font-size:24px; display:flex; gap:8px; justify-content:center;
+  font-size:22px; display:flex; gap:8px; justify-content:center;
   margin-bottom:10px;
 }
 .twinkle { display:inline-block; animation:twk 2s ease-in-out infinite; }
@@ -108,13 +167,21 @@ body::after {
 @keyframes twk { 0%,100%{opacity:1;transform:scale(1) rotate(0deg)} 50%{opacity:.5;transform:scale(.75) rotate(15deg)} }
 
 .home-title {
-  font-family:'Fredoka',sans-serif; font-size:38px; font-weight:700;
+  font-family:'Fredoka',sans-serif; font-size:36px; font-weight:700;
   line-height:1.1; text-wrap:balance;
 }
 .home-title span { color:var(--c1); }
-.home-sub { font-size:15px; color:var(--text-soft); font-weight:600; margin-top:4px; }
+.home-sub { font-size:13px; color:var(--text-soft); font-weight:600; margin-top:4px; }
 
-/* last scores strip */
+.home-settings-btn {
+  position:absolute; top:24px; right:0;
+  width:36px; height:36px; border-radius:50%; border:2px solid var(--border);
+  background:var(--surface); font-size:16px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--text-soft); transition:background .12s;
+}
+.home-settings-btn:active { background:var(--surface-2); }
+
 .home-scores {
   display:flex; gap:10px; margin-bottom:16px; flex-shrink:0;
 }
@@ -127,7 +194,6 @@ body::after {
 .hs-val  { font-family:'Fredoka',sans-serif; font-size:16px; font-weight:600; }
 .hs-lbl  { font-size:11px; color:var(--text-soft); font-weight:600; }
 
-/* activity cards */
 .act-cards { display:flex; flex-direction:column; gap:14px; flex-shrink:0; }
 
 .act-card {
@@ -137,7 +203,7 @@ body::after {
   transition:transform .14s ease, box-shadow .14s ease;
   text-align:left; position:relative;
 }
-.act-card:active { transform:scale(.97); box-shadow:0 3px 12px rgba(180,90,200,.12); }
+.act-card:active { transform:scale(.97); box-shadow:0 3px 12px rgba(100,116,180,.12); }
 
 .act-strip {
   width:90px; min-height:76px; flex-shrink:0;
@@ -155,7 +221,6 @@ body::after {
   font-family:'Fredoka',sans-serif; font-size:22px; font-weight:700;
   line-height:1.1; margin-bottom:3px;
 }
-.act-desc { font-size:13px; color:var(--text-soft); font-weight:600; line-height:1.4; }
 .act-score {
   display:inline-flex; align-items:center; gap:4px; margin-top:8px;
   background:var(--surface-2); border-radius:20px; padding:3px 10px;
@@ -224,7 +289,6 @@ body::after {
 }
 .fc-face-front { background:var(--surface); }
 .fc-face-back  { transform:rotateY(180deg); background:var(--c1-l); }
-.fc-emoji { font-size:42px; line-height:1; }
 .fc-label {
   font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase;
   color:var(--text-soft); background:var(--surface-2); padding:2px 9px; border-radius:20px;
@@ -259,7 +323,7 @@ body::after {
   padding:15px 24px; cursor:pointer; width:100%;
   margin-top:12px; flex-shrink:0; transition:transform .14s ease;
   background:linear-gradient(135deg, var(--c1) 0%, var(--c1-d) 100%);
-  box-shadow:0 4px 16px rgba(255,126,200,.35);
+  box-shadow:0 4px 16px rgba(59,130,246,.35);
 }
 .btn-home:active { transform:scale(.98); }
 
@@ -273,7 +337,6 @@ body::after {
   font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
   color:var(--text-soft); background:var(--c2-l); padding:2px 9px; border-radius:20px;
 }
-.mc-q-emoji { font-size:32px; line-height:1; }
 .mc-q-text  {
   font-family:'Fredoka',sans-serif; font-size:24px; font-weight:600;
   text-align:center; line-height:1.2; text-wrap:balance;
@@ -293,7 +356,7 @@ body::after {
   font-size:14px; font-weight:700; color:var(--text); cursor:pointer;
   min-height:64px; text-align:center; line-height:1.35;
   display:flex; align-items:center; justify-content:center;
-  box-shadow:0 3px 12px rgba(180,90,200,.08); transition:transform .12s, background .12s;
+  box-shadow:0 3px 12px rgba(100,116,180,.08); transition:transform .12s, background .12s;
 }
 .mc-opt:active { transform:scale(.97); }
 .mc-opt.correct { background:var(--correct); border-color:var(--correct); color:#fff; }
@@ -313,7 +376,7 @@ body::after {
   color:var(--text-inv); background:linear-gradient(135deg,var(--c2),var(--c2-d));
   border:none; border-radius:40px; padding:15px 24px; cursor:pointer;
   width:100%; margin-top:10px; flex-shrink:0;
-  box-shadow:0 4px 16px rgba(177,126,255,.35);
+  box-shadow:0 4px 16px rgba(139,92,246,.35);
   transition:transform .14s ease; display:none;
 }
 .btn-next.show { display:block; }
@@ -329,7 +392,6 @@ body::after {
   font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
   color:var(--text-soft); background:var(--c3-l); padding:2px 9px; border-radius:20px;
 }
-.sp-emoji { font-size:32px; line-height:1; }
 .sp-dutch {
   font-family:'Fredoka',sans-serif; font-size:26px; font-weight:600;
   text-align:center; line-height:1.2; text-wrap:balance;
@@ -357,7 +419,7 @@ body::after {
   background:linear-gradient(135deg,var(--c3),var(--c3-d)); color:#fff;
   font-size:22px; cursor:pointer; display:flex; align-items:center;
   justify-content:center; flex-shrink:0; transition:transform .12s;
-  box-shadow:0 4px 14px rgba(56,189,248,.35);
+  box-shadow:0 4px 14px rgba(16,185,129,.35);
 }
 .sp-go:active { transform:scale(.94); }
 
@@ -387,7 +449,7 @@ body::after {
   color:var(--text-inv); background:linear-gradient(135deg,var(--c3),var(--c3-d));
   border:none; border-radius:40px; padding:15px 24px; cursor:pointer;
   width:100%; flex-shrink:0; margin-top:10px;
-  box-shadow:0 4px 16px rgba(56,189,248,.35);
+  box-shadow:0 4px 16px rgba(16,185,129,.35);
   transition:transform .14s ease; display:none;
 }
 .btn-sp-next.show { display:block; }
@@ -423,7 +485,7 @@ body::after {
   font-family:'Fredoka',sans-serif; font-size:18px; font-weight:700;
   color:var(--text-inv); background:linear-gradient(135deg,var(--c1),var(--c1-d));
   border:none; border-radius:40px; padding:15px 24px; cursor:pointer; width:100%;
-  box-shadow:0 4px 16px rgba(255,126,200,.35); transition:transform .14s;
+  box-shadow:0 4px 16px rgba(59,130,246,.35); transition:transform .14s;
 }
 .btn-res-home:active { transform:scale(.98); }
 .btn-res-again {
@@ -433,21 +495,6 @@ body::after {
   transition:background .12s;
 }
 .btn-res-again:active { background:var(--surface-2); }
-
-/* ── ANIMATIONS ────────────────────────────── */
-@keyframes popIn { 0%{opacity:0;transform:scale(.8)} 60%{transform:scale(1.06)} 100%{opacity:1;transform:scale(1)} }
-@keyframes shk   { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-7px)} 40%{transform:translateX(7px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
-@keyframes pls   { 0%,100%{transform:scale(1)} 45%{transform:scale(1.04)} }
-
-.anim-pop { animation:popIn .32s ease forwards; }
-.anim-shk { animation:shk .38s ease forwards; }
-.anim-pls { animation:pls .30s ease forwards; }
-
-@media (prefers-reduced-motion:reduce) {
-  *{ animation-duration:.01ms!important; transition-duration:.01ms!important; }
-}
-
-#cv { position:fixed; inset:0; pointer-events:none; z-index:999; }
 
 /* ── PICKER ─────────────────────────────────── */
 .pk-intro {
@@ -488,19 +535,60 @@ body::after {
   font-size:10px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
   padding:2px 7px; border-radius:20px; color:#fff;
 }
+
+/* ── ANIMATIES ───────────────────────────────── */
+@keyframes popIn { 0%{opacity:0;transform:scale(.8)} 60%{transform:scale(1.06)} 100%{opacity:1;transform:scale(1)} }
+@keyframes shk   { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-7px)} 40%{transform:translateX(7px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+@keyframes pls   { 0%,100%{transform:scale(1)} 45%{transform:scale(1.04)} }
+
+.anim-pop { animation:popIn .32s ease forwards; }
+.anim-shk { animation:shk .38s ease forwards; }
+.anim-pls { animation:pls .30s ease forwards; }
+
+@media (prefers-reduced-motion:reduce) {
+  *{ animation-duration:.01ms!important; transition-duration:.01ms!important; }
+}
+
+#cv { position:fixed; inset:0; pointer-events:none; z-index:999; }
 </style>
 
 <div id="app">
   <canvas id="cv"></canvas>
 
+  <!-- ── SETUP ── -->
+  <div class="screen" id="screen-setup">
+    <div class="setup-head">
+      <div class="setup-icon">🎯</div>
+      <h1 class="setup-title">Woorden<span>quiz</span></h1>
+      <p class="setup-sub">Oefen je Engelse woorden! 🚀</p>
+    </div>
+
+    <div class="setup-section">
+      <div class="setup-label">Hoe heet jij?</div>
+      <input type="text" class="setup-input" id="setup-name"
+        placeholder="Jouw naam..."
+        autocomplete="given-name" autocorrect="off" autocapitalize="words"
+        maxlength="20"
+        onkeydown="if(event.key==='Enter')setupStart()">
+    </div>
+
+    <div class="setup-section">
+      <div class="setup-label">Kies een woordenset</div>
+      <div class="setup-sets" id="setup-sets"></div>
+    </div>
+
+    <button class="btn-setup-start" onclick="setupStart()">▶&nbsp; Start!</button>
+  </div>
+
   <!-- ── HOME ── -->
   <div class="screen" id="screen-home">
     <div class="home-head">
+      <button class="home-settings-btn" onclick="goTo('setup')" title="Instellingen">⚙️</button>
       <div class="home-sparkles">
-        🌸<span class="twinkle">✨</span>🦋<span class="twinkle">⭐</span>🌸
+        ⭐<span class="twinkle">🎯</span>🏆<span class="twinkle">⭐</span>🚀
       </div>
-      <h1 class="home-title">Hoi <span>Evie</span>!</h1>
-      <p class="home-sub">Kies hoe je wil oefenen 💖</p>
+      <h1 class="home-title">Hoi <span id="home-player-name">Speler</span>!</h1>
+      <p class="home-sub" id="home-set-sub">Kies hoe je wil oefenen</p>
     </div>
 
     <div class="home-scores" id="home-scores" style="display:none">
@@ -545,7 +633,7 @@ body::after {
       </button>
     </div>
 
-    <div class="home-footer">🩰🎭🤸🌈🦋</div>
+    <div class="home-footer">🎮 ⭐ 🏆 🎯 🚀</div>
   </div>
 
   <!-- ── PICKER ── -->
@@ -571,7 +659,7 @@ body::after {
   <div class="screen" id="screen-fc">
     <div class="ph">
       <button class="ph-back" onclick="goTo('home')" title="Terug">🏠</button>
-      <div class="ph-icon" style="background:rgba(255,126,200,.15);color:var(--c1)">📖</div>
+      <div class="ph-icon" style="background:rgba(59,130,246,.15);color:var(--c1)">📖</div>
       <div class="ph-info">
         <div class="ph-title">Flashkaarten</div>
         <div class="ph-sub" id="fc-sub">Kaart 1 van 30</div>
@@ -584,13 +672,11 @@ body::after {
     <div class="fc-wrap">
       <div class="fc-card" id="fc-card" onclick="fcFlip()">
         <div class="fc-face fc-face-front">
-          <span class="fc-emoji" id="fc-em-f">📱</span>
           <span class="fc-label">Engels</span>
           <span class="fc-word" id="fc-en">mobile phone</span>
           <span class="fc-hint">Tik om te draaien ↩</span>
         </div>
         <div class="fc-face fc-face-back">
-          <span class="fc-emoji" id="fc-em-b">📱</span>
           <span class="fc-label">Nederlands</span>
           <span class="fc-word" id="fc-nl">mobiele telefoon</span>
           <span class="fc-hint">Tik om terug te draaien ↩</span>
@@ -612,7 +698,7 @@ body::after {
   <div class="screen" id="screen-mc">
     <div class="ph">
       <button class="ph-back" onclick="goTo('home')" title="Terug">🏠</button>
-      <div class="ph-icon" style="background:rgba(177,126,255,.15);color:var(--c2)">🎯</div>
+      <div class="ph-icon" style="background:rgba(139,92,246,.15);color:var(--c2)">🎯</div>
       <div class="ph-info">
         <div class="ph-title">Meerkeuze</div>
         <div class="ph-sub" id="mc-sub">Vraag 1 van 20</div>
@@ -625,7 +711,6 @@ body::after {
 
     <div class="mc-q-card">
       <span class="mc-dir"  id="mc-dir">Engels → Nederlands</span>
-      <span class="mc-q-emoji" id="mc-em">📱</span>
       <span class="mc-q-text"  id="mc-qtxt">mobile phone</span>
       <button class="mc-speak-btn" id="mc-speak" onclick="mcSpeak()">🔊 Luister</button>
     </div>
@@ -641,7 +726,7 @@ body::after {
   <div class="screen" id="screen-sp">
     <div class="ph">
       <button class="ph-back" onclick="goTo('home')" title="Terug">🏠</button>
-      <div class="ph-icon" style="background:rgba(56,189,248,.15);color:var(--c3)">✏️</div>
+      <div class="ph-icon" style="background:rgba(16,185,129,.15);color:var(--c3)">✏️</div>
       <div class="ph-info">
         <div class="ph-title">Schrijven</div>
         <div class="ph-sub" id="sp-sub">Woord 1 van 10</div>
@@ -654,7 +739,6 @@ body::after {
 
     <div class="sp-card">
       <span class="sp-instr">Schrijf het Engelse woord</span>
-      <span class="sp-emoji" id="sp-em">🦷</span>
       <span class="sp-dutch" id="sp-nl">tandarts</span>
       <button class="sp-lspeak" onclick="spSpeak()">🔊 Hoe klinkt het?</button>
     </div>
@@ -679,7 +763,7 @@ body::after {
   <!-- ── RESULTS ── -->
   <div class="screen" id="screen-res">
     <div class="res-stars" id="res-stars">⭐⭐⭐</div>
-    <h2 class="res-title"  id="res-title">Geweldig Evie!</h2>
+    <h2 class="res-title"  id="res-title">Geweldig!</h2>
     <p  class="res-msg"    id="res-msg">Zo goed!</p>
     <div class="res-sc" id="res-row" style="display:none">
       <span class="res-sc-icon" id="res-icon">🎯</span>
@@ -697,58 +781,78 @@ body::after {
 </div>
 
 <script>
-// ─── DATA ───────────────────────────────────────────
-const W=[
-  {en:"mobile phone",            nl:"mobiele telefoon",            e:"📱",s:false},
-  {en:"voice/video/text message",nl:"spraak/video/sms-bericht",    e:"💬",s:false},
-  {en:"texting",                 nl:"sms'en",                      e:"✉️",s:true },
-  {en:"calling someone",         nl:"iemand bellen",               e:"📞",s:false},
-  {en:"all right",               nl:"oké",                         e:"👍",s:false},
-  {en:"picture",                 nl:"afbeelding",                  e:"🖼️",s:true },
-  {en:"send",                    nl:"verzenden",                   e:"📤",s:true },
-  {en:"battery",                 nl:"batterij",                    e:"🔋",s:true },
-  {en:"dead",                    nl:"dood / leeg (batterij)",      e:"💀",s:true },
-  {en:"charge",                  nl:"opladen",                     e:"⚡",s:true },
-  {en:"dentist",                 nl:"tandarts",                    e:"🦷",s:true },
-  {en:"police officer",          nl:"politieagent",                e:"👮",s:false},
-  {en:"teacher",                 nl:"leraar",                      e:"👩‍🏫",s:true },
-  {en:"doctor",                  nl:"dokter",                      e:"👨‍⚕️",s:true },
-  {en:"vet",                     nl:"dierenarts",                  e:"🐾",s:true },
-  {en:"chef",                    nl:"chefkok",                     e:"👨‍🍳",s:true },
-  {en:"astronaut",               nl:"astronaut",                   e:"🚀",s:true },
-  {en:"waitress",                nl:"serveerster",                 e:"🍽️",s:true },
-  {en:"pilot",                   nl:"piloot",                      e:"✈️",s:true },
-  {en:"flight attendant",        nl:"stewardess",                  e:"🛫",s:false},
-  {en:"a lot of",                nl:"heel veel",                   e:"🍎",s:false},
-  {en:"some",                    nl:"sommige",                     e:"🌿",s:true },
-  {en:"chores",                  nl:"klusjes",                     e:"🧹",s:true },
-  {en:"cleaning up",             nl:"schoonmaken",                 e:"🧽",s:false},
-  {en:"doing the dishes",        nl:"de afwas doen",               e:"🍴",s:false},
-  {en:"taking out the bin",      nl:"de prullenbak buiten zetten", e:"🗑️",s:false},
-  {en:"making the bed",          nl:"het bed opmaken",             e:"🛏️",s:false},
-  {en:"tidying up",              nl:"opruimen",                    e:"📦",s:false},
-  {en:"garbage",                 nl:"afval",                       e:"🗑", s:true },
-  {en:"compost",                 nl:"compost",                     e:"🌱",s:true },
+// ─── WOORDENSETS ─────────────────────────────────────
+const WORD_SETS = [
+  {
+    id: 'set1',
+    name: 'Set 1',
+    desc: 'Communicatie & Beroepen',
+    icon: '💬',
+    words: [
+      {en:"mobile phone",            nl:"mobiele telefoon",            s:false},
+      {en:"voice/video/text message",nl:"spraak/video/sms-bericht",    s:true },
+      {en:"texting",                 nl:"sms'en",                      s:true },
+      {en:"calling someone",         nl:"iemand bellen",               s:false},
+      {en:"all right",               nl:"oké",                         s:false},
+      {en:"picture",                 nl:"afbeelding",                  s:true },
+      {en:"send",                    nl:"verzenden",                   s:true },
+      {en:"battery",                 nl:"batterij",                    s:true },
+      {en:"dead",                    nl:"dood / leeg (batterij)",      s:true },
+      {en:"charge",                  nl:"opladen",                     s:true },
+      {en:"dentist",                 nl:"tandarts",                    s:true },
+      {en:"police officer",          nl:"politieagent",                s:false},
+      {en:"teacher",                 nl:"leraar",                      s:true },
+      {en:"doctor",                  nl:"dokter",                      s:true },
+      {en:"vet",                     nl:"dierenarts",                  s:true },
+      {en:"chef",                    nl:"chefkok",                     s:true },
+      {en:"astronaut",               nl:"astronaut",                   s:true },
+      {en:"waitress",                nl:"serveerster",                 s:true },
+      {en:"pilot",                   nl:"piloot",                      s:true },
+      {en:"flight attendant",        nl:"stewardess",                  s:false},
+      {en:"a lot of",                nl:"heel veel",                   s:false},
+      {en:"some",                    nl:"sommige",                     s:true },
+      {en:"chores",                  nl:"klusjes",                     s:true },
+      {en:"cleaning up",             nl:"schoonmaken",                 s:false},
+      {en:"doing the dishes",        nl:"de afwas doen",               s:false},
+      {en:"taking out the bin",      nl:"de prullenbak buiten zetten", s:false},
+      {en:"making the bed",          nl:"het bed opmaken",             s:false},
+      {en:"tidying up",              nl:"opruimen",                    s:false},
+      {en:"garbage",                 nl:"afval",                       s:true },
+      {en:"compost",                 nl:"compost",                     s:true },
+    ]
+  },
+  // Voeg hier nieuwe sets toe:
+  // { id:'set2', name:'Set 2', desc:'...', icon:'📚', words:[...] },
 ];
 
-const OK=[
-  "Wauw, dat wist je! Je bent een ster! ⭐",
-  "Yes!! Helemaal goed! Super, Evie! 🎉",
-  "Geweldig! Zo trots op jou! 🌟",
-  "Ja! Perfect antwoord! Knap hoor! ✨",
-  "Fantastisch! Je wordt steeds beter! 🚀",
-  "Joepie! Helemaal correct! Goed bezig! 🏆",
-  "Top! Je bent een echte woordenkampioen! 💪",
-  "Bravo! Makkelijk voor jou! 🦋",
-  "Waanzinnig goed! Blijf zo doorgaan! 🌈",
-];
-const BAD=[
-  "Bijna! Het was: ",
-  "Goed geprobeerd! Het is: ",
-  "Oeps! Dat was lastig. Het goede antwoord is: ",
-  "Probeer het te onthouden! Het is: ",
-  "Hmm, nog even oefenen! Het juiste antwoord is: ",
-];
+// ─── SPELER & ACTIEVE SET ────────────────────────────
+let playerName  = 'Speler';
+let activeSetIdx = 0;
+let W = WORD_SETS[0].words;
+
+// ─── FEEDBACK BERICHTEN ──────────────────────────────
+function getOK(){
+  return rnd([
+    `Wauw, dat wist je! Je bent een ster! ⭐`,
+    `Yes!! Helemaal goed! Super, ${playerName}! 🎉`,
+    `Geweldig! Zo trots op jou! 🌟`,
+    `Ja! Perfect antwoord! Knap hoor! ✨`,
+    `Fantastisch! Je wordt steeds beter! 🚀`,
+    `Joepie! Helemaal correct! Goed bezig! 🏆`,
+    `Top! Je bent een echte woordenkampioen! 💪`,
+    `Bravo! Makkelijk voor jou! 🎯`,
+    `Waanzinnig goed! Blijf zo doorgaan! 🌈`,
+  ]);
+}
+function getBAD(){
+  return rnd([
+    "Bijna! Het was: ",
+    "Goed geprobeerd! Het is: ",
+    "Oeps! Dat was lastig. Het goede antwoord is: ",
+    "Probeer het te onthouden! Het is: ",
+    "Hmm, nog even oefenen! Het juiste antwoord is: ",
+  ]);
+}
 
 // ─── UTILS ──────────────────────────────────────────
 function shuf(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=0|Math.random()*(i+1);[r[i],r[j]]=[r[j],r[i]]}return r;}
@@ -764,14 +868,14 @@ const S={
 };
 let mcCurWord=null, spCurWord=null;
 
-// ─── SCREENS ────────────────────────────────────────
+// ─── SCHERMEN ────────────────────────────────────────
 function goTo(id){
   const cur=document.querySelector('.screen.active');
   if(cur){cur.classList.add('leaving');setTimeout(()=>cur.classList.remove('active','leaving'),280);}
   setTimeout(()=>document.getElementById('screen-'+id).classList.add('active'),cur?140:0);
 }
 
-// ─── SPEECH ─────────────────────────────────────────
+// ─── GELUID ──────────────────────────────────────────
 function say(t){
   if(!window.speechSynthesis)return;
   speechSynthesis.cancel();
@@ -780,14 +884,14 @@ function say(t){
   speechSynthesis.speak(u);
 }
 
-// ─── CONFETTI ───────────────────────────────────────
+// ─── CONFETTI ────────────────────────────────────────
 const cv=document.getElementById('cv');
 const cx=cv.getContext('2d');
 let parts=[];
 function rsz(){cv.width=innerWidth;cv.height=innerHeight;}
 rsz();addEventListener('resize',rsz);
 function confetti(n=40){
-  const cols=['#FF85C2','#FFD166','#34D399','#38BDF8','#B17EFF','#FB7185','#FBBF24'];
+  const cols=['#3B82F6','#FBBF24','#34D399','#8B5CF6','#FB7185','#10B981','#F59E0B'];
   parts=Array.from({length:n},()=>({
     x:Math.random()*cv.width,y:-10,
     r:Math.random()*7+4,col:rnd(cols),
@@ -811,43 +915,59 @@ function cLoop(){
   else{cRun=false;cx.clearRect(0,0,cv.width,cv.height);}
 }
 
-// ─── PICKER ──────────────────────────────────────────
-const PK_META = {
-  fc:{ icon:'📖', title:'Flashkaarten', color:'var(--c1)', colorHex:'#FF7EC8',
-       opts:[{n:10,lbl:'kaarten'},{n:20,lbl:'kaarten'},{n:30,lbl:'kaarten',all:true}] },
-  mc:{ icon:'🎯', title:'Meerkeuze',    color:'var(--c2)', colorHex:'#B17EFF',
-       opts:[{n:10,lbl:'vragen'},{n:20,lbl:'vragen'},{n:30,lbl:'vragen'},{n:60,lbl:'vragen',all:true}] },
-  sp:{ icon:'✏️', title:'Schrijven',    color:'var(--c3)', colorHex:'#38BDF8',
-       opts:[{n:10,lbl:'woorden'},{n:20,lbl:'woorden'},{n:30,lbl:'woorden',all:true}] },
-};
-
-function showPicker(act){
-  const m=PK_META[act];
-  document.getElementById('pk-title').textContent=m.title;
-  const iw=document.getElementById('pk-icon-wrap');
-  iw.textContent=m.icon;
-  iw.style.background='color-mix(in srgb,'+m.colorHex+' 18%,transparent)';
-  document.getElementById('pk-intro-title').textContent=m.title;
-
-  const grid=document.getElementById('pk-grid');
-  grid.innerHTML='';
-  m.opts.forEach(opt=>{
+// ─── SETUP SCHERM ────────────────────────────────────
+function renderSetupSets(){
+  const cont=document.getElementById('setup-sets');
+  cont.innerHTML='';
+  WORD_SETS.forEach((set,i)=>{
     const btn=document.createElement('button');
-    btn.className='pk-btn';
-    btn.style.cssText='--pk:'+m.colorHex;
+    btn.className='setup-set-btn'+(i===activeSetIdx?' selected':'');
     btn.innerHTML=
-      '<span class="pk-num" style="color:'+m.colorHex+'">'+opt.n+'</span>'+
-      '<span class="pk-unit">'+opt.lbl+'</span>'+
-      (opt.all?'<span class="pk-all-tag" style="background:'+m.colorHex+'">alle</span>':'');
-    btn.onclick=()=>{ if(act==='fc')startFC(opt.n); else if(act==='mc')startMC(opt.n); else startSP(opt.n); };
-    grid.appendChild(btn);
+      '<span class="setup-set-icon">'+set.icon+'</span>'+
+      '<div class="setup-set-info">'+
+        '<div class="setup-set-name">'+set.name+'</div>'+
+        '<div class="setup-set-desc">'+set.desc+'</div>'+
+        '<div class="setup-set-count">'+set.words.length+' woorden</div>'+
+      '</div>'+
+      '<div class="setup-set-check">✓</div>';
+    btn.onclick=()=>selectSet(i);
+    cont.appendChild(btn);
   });
-  goTo('picker');
 }
 
-// ─── HOME ────────────────────────────────────────────
+function selectSet(idx){
+  activeSetIdx=idx;
+  document.querySelectorAll('.setup-set-btn').forEach((b,i)=>{
+    b.classList.toggle('selected',i===idx);
+  });
+}
+
+function setupStart(){
+  const inp=document.getElementById('setup-name');
+  const name=inp.value.trim();
+  if(!name){
+    inp.focus();
+    inp.classList.remove('anim-shk');
+    void inp.offsetWidth;
+    inp.classList.add('anim-shk');
+    setTimeout(()=>inp.classList.remove('anim-shk'),400);
+    return;
+  }
+  playerName=name;
+  W=WORD_SETS[activeSetIdx].words;
+
+  document.getElementById('home-player-name').textContent=playerName;
+  document.getElementById('home-set-sub').textContent=
+    WORD_SETS[activeSetIdx].name+' – '+WORD_SETS[activeSetIdx].desc;
+
+  S.last={fc:false,mc:null,sp:null};
+  updateHomeScores();
+  goTo('home');
+}
+
+// ─── HOME ─────────────────────────────────────────────
 function updateHomeScores(){
-  const mc=S.last.mc, sp=S.last.sp;
+  const mc=S.last.mc,sp=S.last.sp;
   const hs=document.getElementById('home-scores');
   if(mc!==null||sp!==null){hs.style.display='flex';}
   if(mc!==null){
@@ -869,16 +989,54 @@ function updateHomeScores(){
   }
 }
 
-// ─── FLASHCARDS ──────────────────────────────────────
-function startFC(count=30){
+// ─── PICKER ──────────────────────────────────────────
+const PK_META={
+  fc:{ icon:'📖', title:'Flashkaarten', color:'var(--c1)', colorHex:'#3B82F6' },
+  mc:{ icon:'🎯', title:'Meerkeuze',    color:'var(--c2)', colorHex:'#8B5CF6' },
+  sp:{ icon:'✏️', title:'Schrijven',    color:'var(--c3)', colorHex:'#10B981' },
+};
+
+function pickerOpts(act){
+  const total=W.length;
+  const maxQ=act==='mc'?total*2:total;
+  const steps=[10,20,30];
+  const opts=[];
+  steps.forEach(n=>{if(n<maxQ)opts.push({n,lbl:act==='mc'?'vragen':act==='fc'?'kaarten':'woorden'});});
+  opts.push({n:maxQ,lbl:act==='mc'?'vragen':act==='fc'?'kaarten':'woorden',all:true});
+  return opts;
+}
+
+function showPicker(act){
+  const m=PK_META[act];
+  document.getElementById('pk-title').textContent=m.title;
+  const iw=document.getElementById('pk-icon-wrap');
+  iw.textContent=m.icon;
+  iw.style.background='color-mix(in srgb,'+m.colorHex+' 18%,transparent)';
+  document.getElementById('pk-intro-title').textContent=m.title;
+
+  const grid=document.getElementById('pk-grid');
+  grid.innerHTML='';
+  pickerOpts(act).forEach(opt=>{
+    const btn=document.createElement('button');
+    btn.className='pk-btn';
+    btn.innerHTML=
+      '<span class="pk-num" style="color:'+m.colorHex+'">'+opt.n+'</span>'+
+      '<span class="pk-unit">'+opt.lbl+'</span>'+
+      (opt.all?'<span class="pk-all-tag" style="background:'+m.colorHex+'">alle</span>':'');
+    btn.onclick=()=>{ if(act==='fc')startFC(opt.n); else if(act==='mc')startMC(opt.n); else startSP(opt.n); };
+    grid.appendChild(btn);
+  });
+  goTo('picker');
+}
+
+// ─── FLASHKAARTEN ────────────────────────────────────
+function startFC(count){
   S.fc.order=shuf(W.map((_,i)=>i)).slice(0,count);
   S.fc.cur=0;S.fc.seen=1;S.fc.flipped=false;
   renderFC();goTo('fc');
 }
 function renderFC(){
-  const idx=S.fc.order[S.fc.cur],w=W[idx],n=S.fc.cur+1,tot=W.length;
-  document.getElementById('fc-em-f').textContent=w.e;
-  document.getElementById('fc-em-b').textContent=w.e;
+  const idx=S.fc.order[S.fc.cur],w=W[idx],n=S.fc.cur+1,tot=S.fc.order.length;
   document.getElementById('fc-en').textContent=w.en;
   document.getElementById('fc-nl').textContent=w.nl;
   document.getElementById('fc-sub').textContent='Kaart '+n+' van '+tot;
@@ -886,6 +1044,7 @@ function renderFC(){
   document.getElementById('fc-card').classList.remove('flipped');
   S.fc.flipped=false;
   document.getElementById('fc-prev').disabled=S.fc.cur===0;
+  document.getElementById('fc-next').disabled=S.fc.cur>=tot-1;
   if(S.fc.seen>=tot){
     const b=document.getElementById('fc-done');
     b.style.display='block';b.classList.add('anim-pop');
@@ -897,19 +1056,18 @@ function fcFlip(){
 }
 function fcPrev(){if(S.fc.cur>0){S.fc.cur--;renderFC();}}
 function fcNext(){
-  if(S.fc.cur<W.length-1){S.fc.cur++;S.fc.seen=Math.max(S.fc.seen,S.fc.cur+1);renderFC();}
-  else{S.fc.seen=W.length;renderFC();}
+  const tot=S.fc.order.length;
+  if(S.fc.cur<tot-1){S.fc.cur++;S.fc.seen=Math.max(S.fc.seen,S.fc.cur+1);renderFC();}
+  else{S.fc.seen=tot;renderFC();}
 }
 function fcSpeak(){say(W[S.fc.order[S.fc.cur]].en);}
 function fcFinish(){
-  S.last.fc=true;
-  S.lastAct='fc';
-  updateHomeScores();
-  goTo('home');
+  S.last.fc=true;S.lastAct='fc';
+  updateHomeScores();goTo('home');
 }
 
-// ─── MULTIPLE CHOICE ─────────────────────────────────
-function startMC(count=60){
+// ─── MEERKEUZE ───────────────────────────────────────
+function startMC(count){
   S.lastAct='mc';
   const qs=[];
   W.forEach((w,wi)=>{
@@ -928,7 +1086,6 @@ function renderMC(){
   document.getElementById('mc-prog').style.width=(n/tot*100)+'%';
   document.getElementById('mc-badge').textContent=S.mc.score+'/'+tot;
   document.getElementById('mc-dir').textContent=q.dir==='en'?'Engels → Nederlands':'Nederlands → Engels';
-  document.getElementById('mc-em').textContent=q.w.e;
   document.getElementById('mc-qtxt').textContent=q.dir==='en'?q.w.en:q.w.nl;
   const spk=document.getElementById('mc-speak');
   spk.className='mc-speak-btn'+(q.dir==='en'?' show':'');
@@ -959,12 +1116,12 @@ function answerMC(sel,btn,q){
     btn.classList.add('correct','anim-pls');
     S.mc.score++;
     document.getElementById('mc-badge').textContent=S.mc.score+'/'+S.mc.qs.length;
-    document.getElementById('mc-fbmsg').textContent=rnd(OK);
+    document.getElementById('mc-fbmsg').textContent=getOK();
     confetti(22);
   } else {
     btn.classList.remove('correct');btn.classList.add('wrong','anim-shk');
     const ans=q.dir==='en'?q.w.nl:q.w.en;
-    document.getElementById('mc-fbmsg').textContent=rnd(BAD)+'"'+ans+'"';
+    document.getElementById('mc-fbmsg').textContent=getBAD()+'"'+ans+'"';
     document.getElementById('mc-fbans').textContent='('+q.w.en+' = '+q.w.nl+')';
   }
   document.getElementById('mc-next').className='btn-next show';
@@ -975,8 +1132,8 @@ function mcNext(){
 }
 function mcSpeak(){if(mcCurWord)say(mcCurWord.en);}
 
-// ─── SPELLING ────────────────────────────────────────
-function startSP(count=30){
+// ─── SCHRIJVEN ───────────────────────────────────────
+function startSP(count){
   S.lastAct='sp';
   S.sp.words=shuf([...W]).slice(0,count);
   S.sp.cur=0;S.sp.score=0;S.sp.hints=0;S.sp.done=false;
@@ -988,7 +1145,6 @@ function renderSP(){
   document.getElementById('sp-sub').textContent='Woord '+n+' van '+tot;
   document.getElementById('sp-prog').style.width=(n/tot*100)+'%';
   document.getElementById('sp-badge').textContent=S.sp.score+'/'+tot;
-  document.getElementById('sp-em').textContent=w.e;
   document.getElementById('sp-nl').textContent=w.nl;
   const inp=document.getElementById('sp-inp');
   inp.value='';inp.className='sp-input';inp.disabled=false;
@@ -1011,11 +1167,11 @@ function spCheck(){
   if(ok){
     inp.classList.add('ok');S.sp.score++;
     document.getElementById('sp-badge').textContent=S.sp.score+'/'+S.sp.words.length;
-    document.getElementById('sp-fbmsg').textContent=rnd(OK);
+    document.getElementById('sp-fbmsg').textContent=getOK();
     confetti(28);
   } else {
     inp.classList.add('bad');
-    document.getElementById('sp-fbmsg').textContent=rnd(BAD)+'"'+w.en+'"';
+    document.getElementById('sp-fbmsg').textContent=getBAD()+'"'+w.en+'"';
     document.getElementById('sp-fbans').textContent='Jouw antwoord: "'+inp.value.trim()+'"';
   }
   document.getElementById('sp-next').className='btn-sp-next show';
@@ -1034,24 +1190,35 @@ function spNext(){
   else showRes('sp',S.sp.score,S.sp.words.length);
 }
 
-// ─── RESULTS ─────────────────────────────────────────
+// ─── RESULTATEN ──────────────────────────────────────
 function showRes(act,score,total){
   const pct=score/total;
-  // save for home screen
   S.last[act]={score,total};
   updateHomeScores();
 
   let stars,title,msg;
-  if(pct>=.85){stars='⭐⭐⭐';title='Geweldig Evie! 🏆';msg='Je hebt '+score+' van de '+total+' goed!\nJe bent een echte woordenkampioen!';}
-  else if(pct>=.65){stars='⭐⭐';title='Super gedaan! 🌟';msg='Je hebt '+score+' van de '+total+' goed!\nNog een keer en je bent een pro!';}
-  else if(pct>=.4){stars='⭐';title='Goed bezig! 💪';msg='Je hebt '+score+' van de '+total+' goed!\nElk woord dat je leert is er één meer!';}
-  else{stars='🌱';title='Dapper geprobeerd! 😊';msg='Je hebt '+score+' van de '+total+' goed.\nOefening baart kunst — probeer het nog eens!';}
+  if(pct>=.85){
+    stars='⭐⭐⭐';
+    title=`Geweldig ${playerName}! 🏆`;
+    msg='Je hebt '+score+' van de '+total+' goed!\nJe bent een echte woordenkampioen!';
+  } else if(pct>=.65){
+    stars='⭐⭐';
+    title='Super gedaan! 🌟';
+    msg='Je hebt '+score+' van de '+total+' goed!\nNog een keer en je bent een pro!';
+  } else if(pct>=.4){
+    stars='⭐';
+    title='Goed bezig! 💪';
+    msg='Je hebt '+score+' van de '+total+' goed!\nElk woord dat je leert is er één meer!';
+  } else {
+    stars='🌱';
+    title='Dapper geprobeerd! 😊';
+    msg='Je hebt '+score+' van de '+total+' goed.\nOefening baart kunst — probeer het nog eens!';
+  }
 
   document.getElementById('res-stars').textContent=stars;
   document.getElementById('res-title').textContent=title;
   document.getElementById('res-msg').textContent=msg;
 
-  // score row
   const row=document.getElementById('res-row');
   row.style.display='flex';
   document.getElementById('res-icon').textContent=act==='mc'?'🎯':'✏️';
@@ -1069,6 +1236,7 @@ function resAgain(){
   showPicker(S.lastAct);
 }
 
-// ─── BOOT ────────────────────────────────────────────
-document.getElementById('screen-home').classList.add('active');
+// ─── START ───────────────────────────────────────────
+renderSetupSets();
+document.getElementById('screen-setup').classList.add('active');
 </script>
