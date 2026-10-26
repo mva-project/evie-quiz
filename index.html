@@ -25,6 +25,10 @@
   --c3:        #10B981;   /* groen – schrijven */
   --c3-l:      #D1FAE5;
   --c3-d:      #059669;
+  --c4:        #F59E0B;   /* oranje – tijdrace */
+  --c4-d:      #D97706;
+  --c5:        #F43F5E;   /* rood – moeilijke woorden */
+  --c5-d:      #E11D48;
 
   --correct:   #34D399;
   --wrong:     #FB7185;
@@ -212,6 +216,8 @@ body::after {
 .act-fc .act-strip { background:linear-gradient(160deg,var(--c1) 0%,var(--c1-d) 100%); }
 .act-mc .act-strip { background:linear-gradient(160deg,var(--c2) 0%,var(--c2-d) 100%); }
 .act-sp .act-strip { background:linear-gradient(160deg,var(--c3) 0%,var(--c3-d) 100%); }
+.act-tr .act-strip { background:linear-gradient(160deg,var(--c4) 0%,var(--c4-d) 100%); }
+.act-hd .act-strip { background:linear-gradient(160deg,var(--c5) 0%,var(--c5-d) 100%); }
 
 .act-body {
   flex:1; padding:0 14px; background:var(--surface);
@@ -631,6 +637,24 @@ body::after {
         </div>
         <div class="act-arrow">›</div>
       </button>
+
+      <button class="act-card act-tr" onclick="startTR()">
+        <div class="act-strip">⏱️</div>
+        <div class="act-body">
+          <div class="act-title">Tijdrace</div>
+          <div class="act-score" id="home-tr-score" style="display:none">🏆 <span id="home-tr-txt"></span></div>
+        </div>
+        <div class="act-arrow">›</div>
+      </button>
+
+      <button class="act-card act-hd" id="home-hd-card" onclick="startHard()">
+        <div class="act-strip">🔥</div>
+        <div class="act-body">
+          <div class="act-title">Moeilijke woorden</div>
+          <div class="act-score">🔥 <span id="home-hd-txt"></span></div>
+        </div>
+        <div class="act-arrow">›</div>
+      </button>
     </div>
 
     <div class="home-footer">🎮 ⭐ 🏆 🎯 🚀</div>
@@ -700,7 +724,7 @@ body::after {
       <button class="ph-back" onclick="goTo('home')" title="Terug">🏠</button>
       <div class="ph-icon" style="background:rgba(139,92,246,.15);color:var(--c2)">🎯</div>
       <div class="ph-info">
-        <div class="ph-title">Meerkeuze</div>
+        <div class="ph-title" id="mc-title">Meerkeuze</div>
         <div class="ph-sub" id="mc-sub">Vraag 1 van 20</div>
       </div>
       <div class="score-badge" id="mc-badge">0/20</div>
@@ -720,6 +744,28 @@ body::after {
       <div class="mc-fb-ans" id="mc-fbans"></div>
     </div>
     <button class="btn-next" id="mc-next" onclick="mcNext()">Volgende ➜</button>
+  </div>
+
+  <!-- ── TIJDRACE ── -->
+  <div class="screen" id="screen-tr">
+    <div class="ph">
+      <button class="ph-back" onclick="trQuit()" title="Terug">🏠</button>
+      <div class="ph-icon" style="background:rgba(245,158,11,.15);color:var(--c4)">⏱️</div>
+      <div class="ph-info">
+        <div class="ph-title">Tijdrace</div>
+        <div class="ph-sub" id="tr-sub">0 goed</div>
+      </div>
+      <div class="score-badge" id="tr-badge">60s</div>
+    </div>
+    <div class="prog-track">
+      <div class="prog-fill" id="tr-prog" style="background:var(--c4);width:100%;transition:width .2s linear"></div>
+    </div>
+
+    <div class="mc-q-card">
+      <span class="mc-dir" id="tr-dir"></span>
+      <span class="mc-q-text" id="tr-qtxt"></span>
+    </div>
+    <div class="mc-opts" id="tr-opts"></div>
   </div>
 
   <!-- ── SPELLING ── -->
@@ -907,6 +953,7 @@ let mcCurWord=null, spCurWord=null;
 
 // ─── SCHERMEN ────────────────────────────────────────
 function goTo(id){
+  if(id==='home')updateHomeExtras();
   const cur=document.querySelector('.screen.active');
   if(cur){cur.classList.add('leaving');setTimeout(()=>cur.classList.remove('active','leaving'),280);}
   setTimeout(()=>document.getElementById('screen-'+id).classList.add('active'),cur?140:0);
@@ -1106,6 +1153,7 @@ function fcFinish(){
 // ─── MEERKEUZE ───────────────────────────────────────
 function startMC(count){
   S.lastAct='mc';
+  document.getElementById('mc-title').textContent='Meerkeuze';
   const qs=[];
   W.forEach((w,wi)=>{
     ['en','nl'].forEach(dir=>{
@@ -1144,6 +1192,7 @@ function renderMC(){
 function answerMC(sel,btn,q){
   if(S.mc.done)return;S.mc.done=true;
   const ok=sel===q.w;
+  noteResult(q.w,ok);
   document.querySelectorAll('.mc-opt').forEach(b=>{
     b.disabled=true;
     const label=q.dir==='en'?q.w.nl:q.w.en;
@@ -1201,6 +1250,7 @@ function spCheck(){
   S.sp.done=true;inp.disabled=true;
   const w=S.sp.words[S.sp.cur];
   const ok=ans===w.en.toLowerCase();
+  noteResult(w,ok);
   if(ok){
     inp.classList.add('ok');S.sp.score++;
     document.getElementById('sp-badge').textContent=S.sp.score+'/'+S.sp.words.length;
@@ -1227,10 +1277,148 @@ function spNext(){
   else showRes('sp',S.sp.score,S.sp.words.length);
 }
 
+// ─── OPSLAG (per woordenset) ─────────────────────────
+function setId(){return WORD_SETS[activeSetIdx].id;}
+const memStore={};  // terugval als localStorage niet beschikbaar is
+function loadStore(k){
+  try{const v=localStorage.getItem(k);if(v!==null)return JSON.parse(v);}catch(e){}
+  return k in memStore?JSON.parse(memStore[k]):null;
+}
+function saveStore(k,v){
+  memStore[k]=JSON.stringify(v);
+  try{localStorage.setItem(k,memStore[k]);}catch(e){}
+}
+function getRecord(){return loadStore('wq_rec_'+setId())||0;}
+function getWeak(){return loadStore('wq_weak_'+setId())||{};}
+
+// Fout = woord moet 2x goed beantwoord worden om van de lijst te verdwijnen
+function noteResult(w,ok){
+  const m=getWeak();
+  if(ok){
+    if(!m[w.en])return;
+    if(--m[w.en]<=0)delete m[w.en];
+  } else m[w.en]=2;
+  saveStore('wq_weak_'+setId(),m);
+}
+
+function updateHomeExtras(){
+  const rec=getRecord();
+  document.getElementById('home-tr-score').style.display=rec>0?'inline-flex':'none';
+  document.getElementById('home-tr-txt').textContent='Record: '+rec;
+  const m=getWeak();
+  const n=W.filter(w=>m[w.en]).length;
+  document.getElementById('home-hd-txt').textContent=n>0?n+' woorden':'Geen – top!';
+}
+
+// ─── MOEILIJKE WOORDEN ───────────────────────────────
+function startHard(){
+  const m=getWeak();
+  const ws=W.filter(w=>m[w.en]);
+  if(!ws.length){
+    const res=document.getElementById('screen-res');
+    if(res.classList.contains('active')){goTo('home');return;}
+    const c=document.getElementById('home-hd-card');
+    c.classList.remove('anim-shk');void c.offsetWidth;c.classList.add('anim-shk');
+    return;
+  }
+  S.lastAct='hard';
+  document.getElementById('mc-title').textContent='Moeilijke woorden';
+  S.mc.qs=shuf(ws.map(w=>{
+    const wrong=shuf(W.filter(x=>x!==w)).slice(0,3);
+    return {w,dir:rnd(['en','nl']),opts:shuf([w,...wrong])};
+  }));
+  S.mc.cur=0;S.mc.score=0;S.mc.done=false;
+  renderMC();goTo('mc');
+}
+
+// ─── TIJDRACE ────────────────────────────────────────
+const TR_SECS=60;
+let trTimer=null;
+function startTR(){
+  S.lastAct='tr';
+  S.tr={score:0,end:Date.now()+TR_SECS*1000,over:false,locked:false,last:null,rec:getRecord()};
+  document.getElementById('tr-sub').textContent='0 goed';
+  clearInterval(trTimer);
+  trTick();
+  trTimer=setInterval(trTick,200);
+  renderTR();goTo('tr');
+}
+function trTick(){
+  const left=Math.max(0,S.tr.end-Date.now());
+  document.getElementById('tr-badge').textContent=Math.ceil(left/1000)+'s';
+  document.getElementById('tr-prog').style.width=(left/(TR_SECS*1000)*100)+'%';
+  if(left<=0&&!S.tr.over){
+    clearInterval(trTimer);S.tr.over=true;
+    setTimeout(showTrRes,500);
+  }
+}
+function trQuit(){
+  clearInterval(trTimer);S.tr.over=true;goTo('home');
+}
+function renderTR(){
+  let w;
+  do{w=rnd(W);}while(w===S.tr.last&&W.length>1);
+  S.tr.last=w;S.tr.locked=false;
+  const dir=rnd(['en','nl']);
+  const q={w,dir};
+  const opts=shuf([w,...shuf(W.filter(x=>x!==w)).slice(0,3)]);
+  document.getElementById('tr-dir').textContent=dir==='en'?'Engels → Nederlands':'Nederlands → Engels';
+  document.getElementById('tr-qtxt').textContent=dir==='en'?w.en:w.nl;
+  const cont=document.getElementById('tr-opts');
+  cont.innerHTML='';
+  opts.forEach(o=>{
+    const b=document.createElement('button');
+    b.className='mc-opt';
+    b.textContent=dir==='en'?o.nl:o.en;
+    b._o=o;
+    b.onclick=()=>answerTR(o,b,q);
+    cont.appendChild(b);
+  });
+}
+function answerTR(sel,btn,q){
+  if(S.tr.over||S.tr.locked)return;
+  S.tr.locked=true;
+  const ok=sel===q.w;
+  noteResult(q.w,ok);
+  document.querySelectorAll('#tr-opts .mc-opt').forEach(b=>{
+    b.disabled=true;
+    if(b._o===q.w)b.classList.add('correct');
+  });
+  if(ok){
+    S.tr.score++;
+    btn.classList.add('anim-pls');
+    document.getElementById('tr-sub').textContent=S.tr.score+' goed';
+    confetti(8);
+  } else {
+    btn.classList.remove('correct');btn.classList.add('wrong','anim-shk');
+  }
+  setTimeout(()=>{if(!S.tr.over)renderTR();},ok?350:900);
+}
+function showTrRes(){
+  const sc=S.tr.score,rec=S.tr.rec,isRec=sc>0&&sc>rec;
+  if(isRec)saveStore('wq_rec_'+setId(),sc);
+  const best=Math.max(sc,rec);
+  document.getElementById('res-stars').textContent=sc>=15?'⭐⭐⭐':sc>=8?'⭐⭐':sc>=1?'⭐':'🌱';
+  document.getElementById('res-title').textContent=isRec?'Nieuw record! 🏆':'Tijd is om! ⏱️';
+  document.getElementById('res-msg').textContent=
+    'Je had '+sc+' woorden goed in '+TR_SECS+' seconden!\n'+
+    (isRec?'Dat is je beste score!':rec>0?'Je record is '+rec+'. Kun je dat verslaan?':'Probeer het nog eens!');
+  document.getElementById('res-row').style.display='flex';
+  document.getElementById('res-icon').textContent='⏱️';
+  document.getElementById('res-lbl').textContent='Tijdrace';
+  document.getElementById('res-val').textContent=sc+' goed';
+  const bar=document.getElementById('res-bar-f');
+  bar.style.background='var(--c4)';
+  bar.style.width=(best?sc/best*100:0)+'%';
+  if(isRec||sc>=8)setTimeout(()=>confetti(70),400);
+  goTo('res');
+}
+
 // ─── RESULTATEN ──────────────────────────────────────
 function showRes(act,score,total){
   const pct=score/total;
-  S.last[act]={score,total};
+  const hard=S.lastAct==='hard';
+  if(!hard)S.last[act]={score,total};
   updateHomeScores();
 
   let stars,title,msg;
@@ -1258,11 +1446,11 @@ function showRes(act,score,total){
 
   const row=document.getElementById('res-row');
   row.style.display='flex';
-  document.getElementById('res-icon').textContent=act==='mc'?'🎯':'✏️';
-  document.getElementById('res-lbl').textContent=act==='mc'?'Meerkeuze':'Schrijven';
+  document.getElementById('res-icon').textContent=hard?'🔥':act==='mc'?'🎯':'✏️';
+  document.getElementById('res-lbl').textContent=hard?'Moeilijke woorden':act==='mc'?'Meerkeuze':'Schrijven';
   document.getElementById('res-val').textContent=score+' / '+total;
   const bar=document.getElementById('res-bar-f');
-  bar.style.background=act==='mc'?'var(--c2)':'var(--c3)';
+  bar.style.background=hard?'var(--c5)':act==='mc'?'var(--c2)':'var(--c3)';
   bar.style.width=(pct*100)+'%';
 
   if(pct>=.65)setTimeout(()=>confetti(70),400);
@@ -1270,7 +1458,9 @@ function showRes(act,score,total){
 }
 
 function resAgain(){
-  showPicker(S.lastAct);
+  if(S.lastAct==='tr')startTR();
+  else if(S.lastAct==='hard')startHard();
+  else showPicker(S.lastAct);
 }
 
 // ─── START ───────────────────────────────────────────
